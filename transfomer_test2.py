@@ -31,3 +31,11 @@ from torchtext.datasets import Multi30k
 
 train_dataset, valid_dataset, test_dataset = Multi30k.splits(exts=('.de','.en'),fields=(SRC, TRG))
 print(f'학습 : {train_dataset.examples}, 평가 : {valid_dataset.examples}, 테스트 : {test_dataset.examples}')
+
+print(vars(train_dataset.examples[30])['src'])
+print(vars(train_dataset.examples[30])['trg'])
+
+SRC.build_vocab(train_dataset, min_freq=2)
+TRG.build_vocab(train_dataset, min_freq=2)
+print(f'len(SRC): {len(SRC.vocab)}')
+print(f'len(TRG): {len(TRG.vocab)}')
