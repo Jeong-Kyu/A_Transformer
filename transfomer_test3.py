@@ -13,13 +13,11 @@ file_name = os.listdir(file_loc)
 df = pd.read_excel(file_loc+'/'+file_name[0])
 
 all_df = []
-
 for t in range(3):
     sub_df ={}
-    sub_df['hg'] = word_tokenize(df.iloc[t][1])
-    sub_df['eg'] = word_tokenize(df.iloc[t][2])
+    sub_df['hg'] =word_tokenize(df.iloc[t][1])
+    sub_df['eg'] =word_tokenize(df.iloc[t][2])
     all_df.append(sub_df)
-
 train_data,test_data,valid_data = random_split(all_df,[0.7,0.2,0.1])
 
 import torch
@@ -34,14 +32,14 @@ class MultiHeadAttentionLayer(nn.Module):
         self.n_heads = n_heads
         self.head_dim = hidden_dim // n_heads
 
-        self.fc_q == nn.Linear(hidden_dim, hidden_dim)
-        self.fc_k == nn.Linear(hidden_dim, hidden_dim)
-        self.fc_v == nn.Linear(hidden_dim, hidden_dim)
+        self.fc_q = nn.Linear(hidden_dim, hidden_dim)
+        self.fc_k = nn.Linear(hidden_dim, hidden_dim)
+        self.fc_v = nn.Linear(hidden_dim, hidden_dim)
 
-        self.fc_o == nn.Linear(hidden_dim, hidden_dim)
+        self.fc_o = nn.Linear(hidden_dim, hidden_dim)
         self.dropout = nn.Dropout(dropout_ratio)
 
-        self.scale = torch.sqrt()(torch.FloatTensor([self.head_dim])).to(device)
+        self.scale = torch.sqrt(torch.FloatTensor([self.head_dim])).to(device)
 
     def forward(self, query, key, value, mask = None):
 
@@ -201,7 +199,7 @@ class Encoder(nn.Module):
 
         return src # 마지막 레이어의 출력을 반환
 
- class DecoderLayer(nn.Module):
+class DecoderLayer(nn.Module):
     def __init__(self, hidden_dim, n_heads, pf_dim, dropout_ratio, device):
         super().__init__()
 
@@ -376,8 +374,8 @@ class Transformer(nn.Module):
 
         return output, attention
     
-INPUT_DIM = len(SRC.vocab)
-OUTPUT_DIM = len(TRG.vocab)
+INPUT_DIM = len(sub_df['hg'])
+OUTPUT_DIM = len(sub_df['eg'])
 HIDDEN_DIM = 256
 ENC_LAYERS = 3
 DEC_LAYERS = 3
@@ -389,9 +387,10 @@ ENC_DROPOUT = 0.1
 DEC_DROPOUT = 0.1
      
 
-SRC_PAD_IDX = SRC.vocab.stoi[SRC.pad_token]
-TRG_PAD_IDX = TRG.vocab.stoi[TRG.pad_token]
+SRC_PAD_IDX = sub_df['hg']
+TRG_PAD_IDX = sub_df['eg']
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # 인코더(encoder)와 디코더(decoder) 객체 선언
 enc = Encoder(INPUT_DIM, HIDDEN_DIM, ENC_LAYERS, ENC_HEADS, ENC_PF_DIM, ENC_DROPOUT, device)
 dec = Decoder(OUTPUT_DIM, HIDDEN_DIM, DEC_LAYERS, DEC_HEADS, DEC_PF_DIM, DEC_DROPOUT, device)
